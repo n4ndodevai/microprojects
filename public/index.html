@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Faça sua Pergunta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Tutor de Coding</h1>
+        <form method="POST" action="/ask">
+            <input type="text" name="pergunta" placeholder="Digite sua pergunta..." required autocomplete="off" >
+            <button type="submit">Enviar</button>
+        </form>
+        <div class="resposta" id="resposta">
+            <!-- A resposta aparecerá aqui -->
+        </div>
+    </div>
+    <script>
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const pergunta = this.pergunta.value;
+            const respostaDiv = document.getElementById('resposta');
+            respostaDiv.textContent = 'Enviando...';
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ pergunta })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao enviar a pergunta.');
+                }
+
+                const data = await response.json();
+                respostaDiv.textContent = data.resposta || 'Nenhuma resposta recebida.';
+            } catch (error) {
+                respostaDiv.textContent = error.message;
+            }
+        });
+    </script>
+</body>
+</html>
